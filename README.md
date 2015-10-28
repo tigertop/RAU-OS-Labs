@@ -1,5 +1,5 @@
 #RAU Operating Systems 2015 Labs
-
+This repo contains presentations and demo source codes for the Operating Systems course of 2015 at RAU. 
 ##Recommended readings
 
 1. [CLR Via C# By Jeffrey Richter](http://www.wintellect.com/devcenter/paulballard/clr-via-c-by-jeffrey-richter "CLR Via C# By Jeffrey Richter")
