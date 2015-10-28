@@ -24,14 +24,14 @@ public static class IOOps {
    [STAThread]
    public static void Main() {
       PipeDemo.Go().Wait();
-      AsyncFuncCodeTransformation.Go();
-      TaskLogger.Go().Wait();
-      EventAwaiterDemo.Go();
-      Features.Go();
-      GuiDeadlockWindow.Go();
-      Cancellation.Go().Wait();
-      ThreadIO.Go();
-      var s = AwaitWebClient(new Uri("http://Wintellect.com/")).Result;
+      //AsyncFuncCodeTransformation.Go();
+      //TaskLogger.Go().Wait();
+      //EventAwaiterDemo.Go();
+      //Features.Go();
+      //GuiDeadlockWindow.Go();
+      //Cancellation.Go().Wait();
+      //ThreadIO.Go();
+      //var s = AwaitWebClient(new Uri("http://Wintellect.com/")).Result;
    }
 
    private static async Task<String> AwaitWebClient(Uri uri) {
