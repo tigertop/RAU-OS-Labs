@@ -1,5 +1,4 @@
-# RAU-OS-Labs
-RAU Operating Systems 2015 Labs
+#RAU Operating Systems 2015 Labs
 
 ##Recommended readings
 
