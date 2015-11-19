@@ -24,12 +24,12 @@ public static class IOOps {
    [STAThread]
    public static void Main() {
       //PipeDemo.Go().Wait();
-      AsyncFuncCodeTransformation.Go();
+      //AsyncFuncCodeTransformation.Go();
       //TaskLogger.Go().Wait();
       //EventAwaiterDemo.Go();
       //Features.Go();
       //GuiDeadlockWindow.Go();
-      //Cancellation.Go().Wait();
+      Cancellation.Go().Wait();
       //ThreadIO.Go();
       //var s = AwaitWebClient(new Uri("http://Wintellect.com/")).Result;
    }
@@ -231,10 +231,12 @@ internal static class AsyncFuncCodeTransformation {
 
    private static async Task<String> MyMethodAsync(Int32 argument) {
       Int32 local = argument;
+        
       try {
          Type1 result1 = await Method1Async();
          for (Int32 x = 0; x < 3; x++) {
             Type2 result2 = await Method2Async();
+
          }
       }
       catch (Exception) {
@@ -598,16 +600,18 @@ internal sealed class GuiDeadlockWindow : Window {
 internal static class Cancellation {
    public static async Task Go() {
       // Create a CancellationTokenSource that cancels itself after # milliseconds
-      var cts = new CancellationTokenSource(15000); // To cancel sooner, call cts.Cancel()
+      var cts = new CancellationTokenSource(1000); // To cancel sooner, call cts.Cancel()
       var ct = cts.Token;
 
       try {
-         await Task.Delay(10000).WithCancellation(ct);
+         await Task.Delay(3000).WithCancellation(ct);
          Console.WriteLine("Task completed");
+            Console.ReadLine();
       }
       catch (OperationCanceledException) {
          Console.WriteLine("Task cancelled");
-      }
+            Console.ReadLine();
+        }
    }
 
    private struct Void { } // Because there isn't a non-generic TaskCompletionSource class.
@@ -617,7 +621,9 @@ internal static class Cancellation {
       var cancelTask = new TaskCompletionSource<Void>();
 
       // When the CancellationToken is cancelled, complete the Task
-      using (ct.Register(t => ((TaskCompletionSource<Void>)t).TrySetResult(new Void()), cancelTask)) {
+      using (ct.Register(t =>
+      ((TaskCompletionSource<Void>)t).TrySetResult(new Void()), 
+      cancelTask)) {
 
          // Create another Task that completes when the original Task or when the CancellationToken's Task
          Task any = await Task.WhenAny(orignalTask, cancelTask.Task);

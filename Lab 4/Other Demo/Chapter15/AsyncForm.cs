@@ -22,8 +22,8 @@ namespace Chapter15
 	        Controls.Add(label);
 	        Controls.Add(button);
 	    }
-	
-	    async void DisplayWebSiteLength(object sender, EventArgs e)
+
+         public async void  DisplayWebSiteLength(object sender, EventArgs e)
 	    {
             label.Text = "Fetching...";
             using (HttpClient client = new HttpClient())
