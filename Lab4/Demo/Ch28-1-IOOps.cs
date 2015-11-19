@@ -23,8 +23,8 @@ using Microsoft.Win32.SafeHandles;
 public static class IOOps {
    [STAThread]
    public static void Main() {
-      PipeDemo.Go().Wait();
-      //AsyncFuncCodeTransformation.Go();
+      //PipeDemo.Go().Wait();
+      AsyncFuncCodeTransformation.Go();
       //TaskLogger.Go().Wait();
       //EventAwaiterDemo.Go();
       //Features.Go();
@@ -160,7 +160,6 @@ internal static class PipeDemo {
          // NOTE: NamedPipServerStream uses the old Asynchronous Programming Model (APM) 
          // I convert the old APM to the new Task model via TaskFactory's FromAsync method
          await Task.Factory.FromAsync(pipe.BeginWaitForConnection, pipe.EndWaitForConnection, null);
-
          // Start servicing the client which returns immediately since it is asynchronous
          ServiceClientRequestAsync(pipe);
       }
@@ -208,8 +207,9 @@ internal static class PipeDemo {
 
          // Asynchronously send data to the server
          Byte[] request = Encoding.UTF8.GetBytes(message);
+            //Effectivelly calls ContinueWith of the task
          await pipe.WriteAsync(request, 0, request.Length);
-
+            
          // Asynchronously read the server's response
          Byte[] response = new Byte[1000];
          Int32 bytesRead = await pipe.ReadAsync(response, 0, response.Length);

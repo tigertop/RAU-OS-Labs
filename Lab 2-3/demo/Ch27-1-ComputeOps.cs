@@ -20,9 +20,9 @@ public static class ComputeOps {
       //ExecutionContexts.Go();
       //CancellationDemo.Go();
       //TaskDemo.Go();
-      ParallelDemo.Go();
+      //ParallelDemo.Go();
       //ParallelLinq.Go();
-      //TimerDemo.Go();
+      TimerDemo.Go();
       //DelayDemo.Go();
       //FalseSharing.Go();
     }
@@ -530,7 +530,7 @@ internal static class ParallelDemo {
       for (Int32 i = 0; i < 1000; i++) DoWork(i);
 
       // The thread pool’s threads process the work in parallel
-      Parallel.For(0, 1000, i => DoWork(i));
+      Parallel.For(0, 1000, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount },  i => DoWork(i));
 
       var collection = new Int32[0];
       // One thread performs all this work sequentially
@@ -555,29 +555,36 @@ internal static class ParallelDemo {
       var files = Directory.EnumerateFiles(path, searchPattern, searchOption);
       Int64 masterTotal = 0;
 
-      ParallelLoopResult result = Parallel.ForEach<String, Int64>(files,
-         () => { // localInit: Invoked once per task at start
-            // Initialize that this task has seen 0 bytes
-            return 0;   // Set's taskLocalTotal to 0
+        ParallelLoopResult result = Parallel.ForEach<String, Int64>(files,
+           () =>
+           { // localInit: Invoked once per task at start
+             // Initialize that this task has seen 0 bytes
+             return 0;   // Set's taskLocalTotal to 0
          },
 
-         (file, parallelLoopState, index, taskLocalTotal) => { // body: Invoked once per work item
-            // Get this file's size and add it to this task's running total
-            Int64 fileLength = 0;
-            FileStream fs = null;
-            try {
-               fs = File.OpenRead(file);
-               fileLength = fs.Length;
-            }
-            catch (IOException) { /* Ignore any files we can't access */ }
-            finally { if (fs != null) fs.Dispose(); }
-            return taskLocalTotal + fileLength;
-         },
+           (file, parallelLoopState, index, taskLocalTotal) =>
+           { // body: Invoked once per work item
+             // Get this file's size and add it to this task's running total
+               
+               Int64 fileLength = 0;
+               FileStream fs = null;
+               try
+               {
+                   fs = File.OpenRead(file);
+                   fileLength = fs.Length;
+               }
+               catch (IOException) { /* Ignore any files we can't access */ }
+               finally { if (fs != null) fs.Dispose(); }
+             
+               return taskLocalTotal + fileLength;
+           },
 
-         taskLocalTotal => { // localFinally: Invoked once per task at end
-            // Atomically add this task's total to the "master" total
-            Interlocked.Add(ref masterTotal, taskLocalTotal);
-         });
+           taskLocalTotal =>
+           { // localFinally: Invoked once per task at end
+             // Atomically add this task's total to the "master" total
+             Interlocked.Add(ref masterTotal, taskLocalTotal);
+           });
+       
       return masterTotal;
    }
 
@@ -616,15 +623,15 @@ internal static class TimerDemo {
 
    public static void Go() {
       Console.WriteLine("Checking status every 2 seconds");
-
+        
       // Create the Timer ensuring that it never fires. This ensures that
       // s_timer refers to it BEFORE Status is invoked by a thread pool thread
       s_timer = new Timer(Status, null, Timeout.Infinite, Timeout.Infinite);
-
+    
       // Now that s_timer is assigned to, we can let the timer fire knowing
       // that calling Change in Status will not throw a NullReferenceException
       s_timer.Change(0, Timeout.Infinite);
-
+       
       Console.ReadLine();   // Prevent the process from terminating
    }
 
@@ -636,10 +643,10 @@ internal static class TimerDemo {
 
       // Just before returning, have the Timer fire again in 2 seconds
       s_timer.Change(2000, Timeout.Infinite);
-
+      
       // When this method returns, the thread goes back
       // to the pool and waits for another work item
-   }
+    }
 }
 
 internal static class DelayDemo {
