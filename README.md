@@ -9,3 +9,6 @@ This repo contains presentations and demo source codes for the Operating Systems
  
 1. Use [Visual Studio 2015 Community] (https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx "Vs2015 Community Download") edition to compile the demos.
 
+##Homework assignments
+
+1. [Homework #1](https://github.com/tigertop/RAU-OS-Labs/tree/master/Homework/Assignment%20%231 "Homework #1")
