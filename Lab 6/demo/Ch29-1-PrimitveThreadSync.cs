@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 public static class PrimitveThreadSync {
    public static void Main() {
-      //OptimizedAway();
-      //StrangeBehavior.Go();
-      //AsyncCoordinatorDemo.Go();
-      //LockComparison.Go();
+        //OptimizedAway();
+        //StrangeBehavior.Go();
+        //AsyncCoordinatorDemo.Go();
+        //SingleInstance.Go();
+      LockComparison.Go();
       //RegisteredWaitHandleDemo.Go();
    }
 
@@ -89,6 +90,7 @@ internal static class ThreadsSharingData {
          // Note: 5 must be written to m_value before 1 is written to m_flag
          m_value = 5;
          Volatile.Write(ref m_flag, 1);
+           
       }
 
       // This method is executed by another thread 
@@ -118,6 +120,34 @@ internal static class ThreadsSharingData {
       }
    }
 }
+
+internal static class SingleInstance
+{
+    public static void Go()
+    {
+        Boolean createdNew;
+        // Try to create a kernel object with the specified name
+        using (new Semaphore(0, 1, "SomeUniqueStringIdentifyingMyApp", out createdNew))
+        {
+            if (createdNew)
+            {
+                // This thread created the kernel object so no other instance of this
+                // application must be running. Run the rest of the application here... 
+                Console.WriteLine("I am number one :)");
+                Console.ReadLine();
+            }
+            else
+            {
+                // This thread opened an existing kernel object with the same string name;   
+                // another instance of this application must be running now.             
+                // There is nothing to do in here, let's just return from Main to terminate  
+                // this second instance of the application.
+                Console.WriteLine("An another istance of the app is currently running :(");
+                Console.ReadLine();
+            }
+        }
+    }
+}       
 
 internal static class AsyncCoordinatorDemo {
    public static void Go() {
@@ -346,6 +376,29 @@ internal static class LockComparison {
 
       public void Dispose() { m_available.Dispose(); }
    }
+
+    private sealed class SimpleSempahoreLock : IDisposable
+    {
+        private readonly Semaphore m_available;
+        public SimpleSempahoreLock(int initialCount)
+        {
+            m_available = new Semaphore(initialCount, Int32.MaxValue); // Initially free1
+        }
+
+        public void Enter()
+        {
+            // Block in kernel until resource available
+            m_available.WaitOne();
+        }
+
+        public void Leave()
+        {
+            // Let another thread access the resource
+            m_available.Release(1);
+        }
+
+        public void Dispose() { m_available.Dispose(); }
+    }
 }
 
 internal sealed class RecursiveAutoResetEvent : IDisposable {
@@ -385,38 +438,6 @@ internal sealed class RecursiveAutoResetEvent : IDisposable {
    }
 
    public void Dispose() { m_lock.Dispose(); }
-}
-
-internal static class RegisteredWaitHandleDemo {
-   public static void Go() {
-      // Construct an AutoResetEvent (initially false)
-      AutoResetEvent are = new AutoResetEvent(false);
-
-      // Tell the thread pool to wait on the AutoResetEvent
-      RegisteredWaitHandle rwh = ThreadPool.RegisterWaitForSingleObject(
-         are,             // Wait on this AutoResetEvent
-         EventOperation,  // When available, call the EventOperation method
-         null,            // Pass null to EventOperation
-         5000,            // Wait 5 seconds for the event to become true
-         false);          // Call EventOperation everytime the event is true
-
-      // Start our loop
-      Char operation = (Char)0;
-      while (operation != 'Q') {
-         Console.WriteLine("S=Signal, Q=Quit?");
-         operation = Char.ToUpper(Console.ReadKey(true).KeyChar);
-         if (operation == 'S') are.Set(); // User want to set the event
-      }
-
-      // Tell the thread pool to stop waiting on the event
-      rwh.Unregister(null);
-   }
-
-   // This method is called whenever the event is true or
-   // when 5 seconds have elapsed since the last callback/timeout
-   private static void EventOperation(Object state, Boolean timedOut) {
-      Console.WriteLine(timedOut ? "Timeout" : "Event became true");
-   }
 }
 
 
