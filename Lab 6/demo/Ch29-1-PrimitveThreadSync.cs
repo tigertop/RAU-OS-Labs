@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 public static class PrimitveThreadSync {
    public static void Main() {
-        //OptimizedAway();
-        //StrangeBehavior.Go();
-        //AsyncCoordinatorDemo.Go();
-        //SingleInstance.Go();
-      LockComparison.Go();
+      //OptimizedAway();
+      //StrangeBehavior.Go();
+      //AsyncCoordinatorDemo.Go();
+      SingleInstance.Go();
+      //LockComparison.Go();
       //RegisteredWaitHandleDemo.Go();
    }
 
@@ -142,7 +142,7 @@ internal static class SingleInstance
                 // another instance of this application must be running now.             
                 // There is nothing to do in here, let's just return from Main to terminate  
                 // this second instance of the application.
-                Console.WriteLine("An another istance of the app is currently running :(");
+                Console.WriteLine("An another instance of the app is currently running :(");
                 Console.ReadLine();
             }
         }
@@ -334,7 +334,18 @@ internal static class LockComparison {
          }
          Console.WriteLine("Incrementing x in SimpleWaitLock: {0:N0}", sw.ElapsedMilliseconds);
       }
-      Console.ReadLine();
+
+        //using (SimpleSempahoreLock swl = new SimpleSempahoreLock(1, 1))
+        //{
+        //    sw.Restart();
+        //    for (Int32 i = 0; i < iterations; i++)
+        //    {
+        //        swl.Enter(); x++; swl.Leave();
+        //    }
+        //    Console.WriteLine("Incrementing x in SimpleSempahoreLock: {0:N0}", sw.ElapsedMilliseconds);
+        //}
+
+        Console.ReadLine();
    }
 
    [MethodImpl(MethodImplOptions.NoInlining)]
@@ -380,9 +391,9 @@ internal static class LockComparison {
     private sealed class SimpleSempahoreLock : IDisposable
     {
         private readonly Semaphore m_available;
-        public SimpleSempahoreLock(int initialCount)
+        public SimpleSempahoreLock(int initialCount, int maxCount)
         {
-            m_available = new Semaphore(initialCount, Int32.MaxValue); // Initially free1
+            m_available = new Semaphore(initialCount, maxCount); // Initially free1
         }
 
         public void Enter()
