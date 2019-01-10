@@ -46,22 +46,22 @@ namespace WindowsFormsApplication2
                     try
                     {
                         Citizen newHay = new Citizen();
-                        newHay.Firstname = 
-                            ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "B"));
+                        newHay.Firstname = ArmenianUnicodeConverter.Current.ConvertStringFrom1252ToUnicode(
+                            ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "C")));
                         if (string.IsNullOrEmpty(newHay.Firstname))
                         {
                             continue;
                         }
-                        newHay.Lastname = 
-                            ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "A"));
-                        newHay.Middlename = 
-                            ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "C"));
-                        newHay.Address = 
-                            ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "H"));
+                        newHay.Lastname = ArmenianUnicodeConverter.Current.ConvertStringFrom1252ToUnicode(
+                            ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "B")));
+                        newHay.Middlename = ArmenianUnicodeConverter.Current.ConvertStringFrom1252ToUnicode(
+                            ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "D")));
+                        newHay.Address = ArmenianUnicodeConverter.Current.ConvertStringFrom1252ToUnicode(
+                            ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "F")));
                         newHay.Tec =
-                            ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "J"));
+                            ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "H"));
 
-                        var bday = ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "D"));
+                        var bday = ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "E"));
                         if (bday.StartsWith("00/00"))
                         {
                             newHay.Birthday = new DateTime(Convert.ToInt32(bday.Substring(6, 4)), 1, 1);
@@ -72,10 +72,9 @@ namespace WindowsFormsApplication2
                         }
 
 
-                        newHay.State = ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "E"));
-                        newHay.Community = ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "F"));
-                        //newHay.Teritory = ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "I"));
-                        newHay.Comment = ExcelHelper.GetCellValue(workbookPart, ExcelHelper.GetCell(row, "K"));
+                        newHay.State = "N/A";
+                        newHay.Community = "N/A";
+
 
                         returnValues.Add(newHay);
                     }
